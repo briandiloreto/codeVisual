@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import { retryCommand } from './utils/command';
+import { SymbolsByFileId } from './utils/symbol-lookup';
+import { ViewColumn } from 'vscode';
 
 export class CallGraphPanel {
 	public static readonly viewType = 'crabviz.callgraph';
@@ -10,10 +13,12 @@ export class CallGraphPanel {
 	private readonly _extensionUri: vscode.Uri;
 	private _disposables: vscode.Disposable[] = [];
 
+	private symbolLookup: SymbolsByFileId = {};
+
 	public constructor(extensionUri: vscode.Uri) {
 		this._extensionUri = extensionUri;
 
-		const panel = vscode.window.createWebviewPanel(CallGraphPanel.viewType, `Crabviz #${CallGraphPanel.num}`, vscode.ViewColumn.One, {
+		const panel = vscode.window.createWebviewPanel(CallGraphPanel.viewType, `Visualize #${CallGraphPanel.num}`, vscode.ViewColumn.One, {
 			localResourceRoots: [
 				vscode.Uri.joinPath(this._extensionUri, 'media')
 			],
@@ -25,11 +30,16 @@ export class CallGraphPanel {
 		this._panel = panel;
 
 		this._panel.webview.onDidReceiveMessage(
-			message => {
+			async (message) => {
+				console.log('Message received from panel:', message);
+
 				switch (message.command) {
 					case 'saveSVG':
 						this.saveSVG(message.svg);
+						break;
 
+					case 'selectCell':
+						await this.editorNavigateToSymbolId(message.symbol);
 						break;
 				}
 			},
@@ -39,6 +49,8 @@ export class CallGraphPanel {
 
 		this._panel.onDidChangeViewState(
 			e => {
+				// console.log('Panel onDidChangeViewState');
+				
 				if (panel.active) {
 					CallGraphPanel.currentPanel = this;
 				} else if (CallGraphPanel.currentPanel !== this) {
@@ -51,8 +63,25 @@ export class CallGraphPanel {
 			this._disposables
 		);
 
-		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+		this._panel.onDidDispose(() => {
+			// console.log('Panel onDidDispose');
 
+			this.dispose()
+		}, null, this._disposables);
+
+
+		// Detect changes in active panel
+		const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+
+		vscode.window.onDidChangeActiveTextEditor(editor => { 
+			if (editor) {
+				statusBarItem.text = `Active: $(file) ${editor.document.fileName}`;
+				statusBarItem.show();
+			} else {
+				statusBarItem.hide();
+			}
+		});
+			
 		CallGraphPanel.num += 1;
 	}
 
@@ -69,10 +98,12 @@ export class CallGraphPanel {
 		}
 	}
 
-	public showCallGraph(svg: string, focusMode: boolean) {
+	public showCallGraph(svg: string, focusMode: boolean, symbolLookup: SymbolsByFileId) {
 		const resourceUri = vscode.Uri.joinPath(this._extensionUri, 'media');
 
-		const filePromises = ['variables.css', 'styles.css', 'graph.js', 'panzoom.min.js', 'export.js'].map(fileName =>
+		this.symbolLookup = symbolLookup;
+
+		const filePromises = ['variables.css', 'styles.css', 'graph.js', 'panzoom.min.js', 'export.js', 'vscode.js'].map(fileName =>
 			vscode.workspace.fs.readFile(vscode.Uri.joinPath(resourceUri, fileName))
 		);
 
@@ -92,7 +123,7 @@ export class CallGraphPanel {
 						${cssStyles.toString()}
 					</style>
 					${scripts.map((s) => `<script nonce="${nonce}">${s.toString()}</script>`)}
-					<title>crabviz</title>
+					<title>Visualize</title>
 			</head>
 			<body data-vscode-context='{ "preventDefaultContextMenuItems": true }'>
 					${svg}
@@ -136,6 +167,92 @@ export class CallGraphPanel {
 				}
 			}
 		});
+	}
+
+	public async editorNavigateToSymbolName(symbolName: string) {
+		// Navigate to the given symbol by searching the workspace for the symbol
+		let symbolsFound = await retryCommand<vscode.SymbolInformation[]>(5, 600, 'vscode.executeWorkspaceSymbolProvider', symbolName);
+		console.log('Symbols found matching symbol name:', symbolName, symbolsFound);
+
+		if (symbolsFound && symbolsFound.length > 0) {
+			const targetSymbol = symbolsFound[0];
+			console.log('Symbol instance:', targetSymbol);
+
+			// Open document containing symbol
+			const location = new vscode.Location(targetSymbol.location.uri, targetSymbol.location.range);
+			vscode.workspace.openTextDocument(location.uri).then(document => {
+				console.log('Symbol document opened:', location.uri);
+				
+				// Show document and navigation to symbol range
+				vscode.window.showTextDocument(document, {
+					viewColumn: ViewColumn.Active,
+					preserveFocus: false,
+					preview: false,
+					selection: targetSymbol.location.range
+				});
+			}, error => {
+				vscode.window.showErrorMessage(`Error opening file: ${error}`);
+			});
+		} else {
+			vscode.window.showErrorMessage(`Symbol not found in workspace: ${symbolName}`);
+		}
+	}
+
+	public async editorNavigateToSymbolId(symbolId: string) {
+		// Navigate to the given symbol reference using the symbol lookup
+		// Parse the symbol ID to get the file ID and the symbol location within the file
+		const partsSymbol = symbolId.split(':');
+		if (partsSymbol.length == 2) {
+			const fileId = partsSymbol[0];
+
+			const partsLocation = partsSymbol[1].split('_');
+			if (partsLocation.length == 2) {
+				const line = parseInt(partsLocation[0]);
+				const character = parseInt(partsLocation[1]);
+
+				// Lookup the symbol
+				const fileSymbols = this.symbolLookup[fileId];
+				if (fileSymbols) {
+					console.log('Found file in lookup:', fileId, fileSymbols.filePath);
+
+					// Open file containing the symbol
+					vscode.workspace.openTextDocument(fileSymbols.filePath).then(document => {
+						console.log('File opened:', fileSymbols.filePath);
+						
+						// Find symbol in lookup
+						const symbolFound = fileSymbols.symbols.find(s => 
+							s.selectionRange.start.line == line &&
+							s.selectionRange.start.character == character);
+
+						if (symbolFound) {
+							console.log('Found symbol in lookup:', symbolFound);
+							const positionStart = new vscode.Position(symbolFound.selectionRange.start.line, symbolFound.selectionRange.start.character);
+							const positionEnd = new vscode.Position(symbolFound.selectionRange.end.line, symbolFound.selectionRange.end.character);
+							
+							// Show the text file containing the symbol and select the symbol
+							vscode.window.showTextDocument(document, {
+								viewColumn: ViewColumn.Active,
+								preserveFocus: false,
+								preview: false,
+								selection: new vscode.Range(positionStart, positionEnd)
+							});
+						}
+					}, error => {
+						vscode.window.showErrorMessage(`Error opening file: ${error}`);
+					});
+				} else {
+					vscode.window.showErrorMessage(`Document symbol not found in the lookup table`);
+				}
+			}
+		}
+	}
+
+	public editorFindWithPath(path: string): vscode.TextEditor | undefined {
+		return vscode.window.visibleTextEditors.find(editor => editor.document.uri.fsPath === path);		
+	}
+
+	public editorRevealRange(editor: vscode.TextEditor, range: vscode.Range) {
+		editor.revealRange(range, vscode.TextEditorRevealType.InCenter);	
 	}
 }
 

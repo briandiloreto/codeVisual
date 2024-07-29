@@ -172,6 +172,12 @@ class CallGraph {
       }
 
       const [elem, elemType] = elemTuple;
+      console.log('mouseup', elemType, elem.id);
+
+      getVsCodeApi().postMessage({
+        command: 'selectCell',
+        symbol: elem.id
+      });
 
       switch (elemType) {
         case GraphElemType.NODE:

@@ -7,7 +7,7 @@ function exportSVG() {
     "<style>:is(.cell, .edge) { pointer-events: none; }</style>"
   );
 
-  acquireVsCodeApi().postMessage({
+  getVsCodeApi().postMessage({
     command: 'saveSVG',
     svg: svg.outerHTML.replaceAll("&nbsp;", "&#160;")
   });

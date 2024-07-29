@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
 import { instance as vizInstance } from '@viz-js/viz';
+import { omit } from 'lodash';
 
 import { retryCommand } from './utils/command';
+import { SymbolsByFileId } from './utils/symbol-lookup';
 import { GraphGenerator } from '../crabviz';
 import { Ignore } from 'ignore';
 import * as path from "path";
@@ -26,7 +28,7 @@ export class Generator {
     files: vscode.Uri[],
     progress: vscode.Progress<{ message?: string; increment?: number }>,
     token: vscode.CancellationToken,
-  ): Promise<string> {
+  ): Promise<[string, SymbolsByFileId]> {
     files.sort((f1, f2) => f2.path.split('/').length - f1.path.split('/').length);
 
     const funcMap = new Map<string, Set<string>>(files.map(f => [normalizedPath(f.path), new Set()]));
@@ -34,9 +36,13 @@ export class Generator {
     let finishedCount = 0;
     progress.report({ message: `${finishedCount} / ${files.length}` });
 
+    // Define symbol lookup
+    let fileIndex = 0;
+    let symbolsByFileId: SymbolsByFileId = {};
+     
     for await (const file of files) {
       if (token.isCancellationRequested) {
-        return "";
+        return ["", {}];
       }
 
       // retry several times if the LSP server is not ready
@@ -54,10 +60,15 @@ export class Generator {
         continue;
       }
 
+      // Collect top-level symbols in the file
+      fileIndex++;
+      let symbolsInfo = symbols.map(s => omit(s, ['children', 'tags']) as vscode.DocumentSymbol);
+
+      // Process symbols
       while (symbols.length > 0) {
         for await (const symbol of symbols) {
           if (token.isCancellationRequested) {
-            return "";
+            return ["", {}];
           }
 
           const symbolStart = symbol.selectionRange.start;
@@ -104,15 +115,26 @@ export class Generator {
         }
 
         symbols = symbols.flatMap(symbol => symbol.children);
+
+        // Collect child symbols for the file
+        const symbolsInfoChildren = symbols.map(s => omit(s, ['children', 'tags']) as vscode.DocumentSymbol);
+        symbolsInfo = symbolsInfo.concat(symbolsInfoChildren);
       }
+
+      // Create symbol lookup for current file
+      symbolsByFileId[fileIndex.toString()] = {
+        filePath: file.path,
+        symbols: symbolsInfo
+      };
 
       finishedCount += 1;
       progress.report({ message: `${finishedCount} / ${files.length}`, increment: 100 / files.length });
     }
 
     const dot = this.inner.generate_dot_source();
+    const dotRendered = await viz.then(viz => viz.renderString(dot, renderOptions));
 
-    return await viz.then(viz => viz.renderString(dot, renderOptions));
+    return [dotRendered, symbolsByFileId];
   }
 
   async generateFuncCallGraph(uri: vscode.Uri, anchor: vscode.Position, ig: Ignore): Promise<string | null> {

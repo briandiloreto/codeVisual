@@ -78,7 +78,7 @@ export class CommandManager {
 
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Crabviz: Generating call graph",
+			title: "Visualize: Generating call graph",
 			cancellable: true,
 		}, (progress, token) => {
 			token.onCancellationRequested(() => cancelled = true);
@@ -86,11 +86,11 @@ export class CommandManager {
 			const generator = new Generator(root.uri, lang);
 			return generator.generateCallGraph(files.get(lang)!, progress, token);
 		})
-		.then(svg => {
+		.then(([svg, symbolLookup]) => {
 			if (cancelled) { return; }
 
 			const panel = new CallGraphPanel(this.context.extensionUri);
-			panel.showCallGraph(svg, false);
+			panel.showCallGraph(svg, false, symbolLookup);
 		});
 	}
 
@@ -109,7 +109,7 @@ export class CommandManager {
 
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Window,
-			title: "Crabviz: Generating call graph",
+			title: "Visualize: Generating call graph",
 		}, _ => {
 			return generator.generateFuncCallGraph(uri, anchor, ig);
 		})
@@ -120,7 +120,7 @@ export class CommandManager {
 			}
 
 			const panel = new CallGraphPanel(this.context.extensionUri);
-			panel.showCallGraph(svg, true);
+			panel.showCallGraph(svg, true, {});
 		});
 	}
 

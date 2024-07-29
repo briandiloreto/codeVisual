@@ -1,6 +1,6 @@
 {
   "name": "crabviz",
-  "displayName": "Crabviz",
+  "displayName": "Visualize",
   "description": "interactive call graph generator",
   "version": "0.4.0",
   "publisher": "chanhx",
@@ -27,11 +27,11 @@
     "commands": [
       {
         "command": "crabviz.generateCallGraph",
-        "title": "Crabviz: Generate Call Graph"
+        "title": "Visualize: Generate Call Graph"
       },
       {
         "command": "crabviz.generateFuncCallGraph",
-        "title": "Crabviz: Generate Function Call Graph"
+        "title": "Visualize: Generate Function Call Graph"
       },
       {
         "command": "crabviz.exportCallGraph",
@@ -83,16 +83,20 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "test-extension": "node ./out/test/extension.test.js",
+    "test-vscode": "vscode-test"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
+    "@types/lodash": "^4.17.7",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/vscode": "~1.83.0",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
-    "@vscode/test-electron": "^2.3.9",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
     "@wasm-tool/wasm-pack-plugin": "^1.6.0",
     "eslint": "^8.57.0",
     "glob": "^10.3.12",
@@ -104,6 +108,7 @@
   },
   "dependencies": {
     "@viz-js/viz": "^3.4.0",
-    "ignore": "^5.3.0"
+    "ignore": "^5.3.0",
+    "lodash": "^4.17.21"
   }
 }
