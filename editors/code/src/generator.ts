@@ -4,7 +4,7 @@ import { omit } from 'lodash';
 
 import { retryCommand } from './utils/command';
 import { SymbolsByFileId } from './utils/symbol-lookup';
-import { GraphGenerator } from '../crabviz';
+import { GraphGenerator } from '../codevisual';
 import { Ignore } from 'ignore';
 import * as path from "path";
 

@@ -1,4 +1,4 @@
-# Build Rust project to web assembly
+
 rustup update
 
 # Build everything using webpack and webpack config file to compile Rust to web assembly and package with the extension

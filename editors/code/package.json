@@ -1,5 +1,5 @@
 {
-  "name": "crabviz",
+  "name": "codevisual",
   "displayName": "Visualize",
   "description": "interactive call graph generator",
   "version": "0.4.0",
@@ -9,7 +9,7 @@
   },
   "icon": "media/icon.png",
   "repository": {
-    "url": "https://github.com/chanhx/crabviz"
+    "url": "https://github.com/chanhx/codevisual"
   },
   "engines": {
     "vscode": "^1.83.0"
@@ -26,50 +26,50 @@
   "contributes": {
     "commands": [
       {
-        "command": "crabviz.generateCallGraph",
+        "command": "codevisual.generateCallGraph",
         "title": "Visualize: Generate Call Graph"
       },
       {
-        "command": "crabviz.generateFuncCallGraph",
+        "command": "codevisual.generateFuncCallGraph",
         "title": "Visualize: Generate Function Call Graph"
       },
       {
-        "command": "crabviz.exportCallGraph",
+        "command": "codevisual.exportCallGraph",
         "title": "Export Call Graph"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "crabviz.generateCallGraph",
+          "command": "codevisual.generateCallGraph",
           "when": "never"
         },
         {
-          "command": "crabviz.generateFuncCallGraph",
+          "command": "codevisual.generateFuncCallGraph",
           "when": "never"
         },
         {
-          "command": "crabviz.exportCallGraph",
+          "command": "codevisual.exportCallGraph",
           "when": "never"
         }
       ],
       "editor/context": [
         {
-          "command": "crabviz.generateFuncCallGraph",
-          "group": "crabviz",
+          "command": "codevisual.generateFuncCallGraph",
+          "group": "codevisual",
           "when": "editorHasCallHierarchyProvider"
         }
       ],
       "explorer/context": [
         {
-          "command": "crabviz.generateCallGraph",
-          "group": "crabviz"
+          "command": "codevisual.generateCallGraph",
+          "group": "codevisual"
         }
       ],
       "webview/context": [
         {
-          "command": "crabviz.exportCallGraph",
-          "when": "webviewId == 'crabviz.callgraph'"
+          "command": "codevisual.exportCallGraph",
+          "when": "webviewId == 'codevisual.callgraph'"
         }
       ]
     }

@@ -4,7 +4,7 @@ import { SymbolsByFileId } from './utils/symbol-lookup';
 import { ViewColumn } from 'vscode';
 
 export class CallGraphPanel {
-	public static readonly viewType = 'crabviz.callgraph';
+	public static readonly viewType = 'codevisual.callgraph';
 
 	public static currentPanel: CallGraphPanel | null = null;
 	private static num = 1;
