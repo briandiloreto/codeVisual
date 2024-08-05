@@ -13,9 +13,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	let manager = new CommandManager(context);
-
+  
 	context.subscriptions.push(
-		vscode.commands.registerCommand('codevisual.generateCallGraph', manager.generateCallGraph.bind(manager)),
+		//vscode.commands.registerCommand('codevisual.generateCallGraph', manager.generateCallGraph.bind(manager)),
+    	vscode.commands.registerCommand('codevisual.generateCallGraph', manager.generateCallGraphTest.bind(manager)),
 		vscode.commands.registerTextEditorCommand('codevisual.generateFuncCallGraph', manager.generateFuncCallGraph.bind(manager)),
 		vscode.commands.registerCommand('codevisual.exportCallGraph', () => {
 			CallGraphPanel.currentPanel?.exportSVG();

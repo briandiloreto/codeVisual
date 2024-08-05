@@ -28,7 +28,7 @@ export class Generator {
     files: vscode.Uri[],
     progress: vscode.Progress<{ message?: string; increment?: number }>,
     token: vscode.CancellationToken,
-  ): Promise<[string, SymbolsByFileId]> {
+  ): Promise<[string, string, SymbolsByFileId]> {
     files.sort((f1, f2) => f2.path.split('/').length - f1.path.split('/').length);
 
     const funcMap = new Map<string, Set<string>>(files.map(f => [normalizedPath(f.path), new Set()]));
@@ -42,7 +42,7 @@ export class Generator {
      
     for await (const file of files) {
       if (token.isCancellationRequested) {
-        return ["", {}];
+        return ["", "", {}];
       }
 
       // retry several times if the LSP server is not ready
@@ -68,7 +68,7 @@ export class Generator {
       while (symbols.length > 0) {
         for await (const symbol of symbols) {
           if (token.isCancellationRequested) {
-            return ["", {}];
+            return ["", "", {}];
           }
 
           const symbolStart = symbol.selectionRange.start;
@@ -134,7 +134,7 @@ export class Generator {
     const dot = this.inner.generate_dot_source();
     const dotRendered = await viz.then(viz => viz.renderString(dot, renderOptions));
 
-    return [dotRendered, symbolsByFileId];
+    return [dot, dotRendered, symbolsByFileId];
   }
 
   async generateFuncCallGraph(uri: vscode.Uri, anchor: vscode.Position, ig: Ignore): Promise<string | null> {

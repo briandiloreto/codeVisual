@@ -20,12 +20,12 @@ export class CallGraphPanel {
 
 		const panel = vscode.window.createWebviewPanel(CallGraphPanel.viewType, `Visualize #${CallGraphPanel.num}`, vscode.ViewColumn.One, {
 			localResourceRoots: [
-				vscode.Uri.joinPath(this._extensionUri, 'media')
+				vscode.Uri.joinPath(this._extensionUri, 'contentCrab')
 			],
 			enableScripts: true
 		});
 
-		panel.iconPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'icon.svg');
+		panel.iconPath = vscode.Uri.joinPath(this._extensionUri, 'contentCrab', 'icon.svg');
 
 		this._panel = panel;
 
@@ -99,7 +99,7 @@ export class CallGraphPanel {
 	}
 
 	public showCallGraph(svg: string, focusMode: boolean, symbolLookup: SymbolsByFileId) {
-		const resourceUri = vscode.Uri.joinPath(this._extensionUri, 'media');
+		const resourceUri = vscode.Uri.joinPath(this._extensionUri, 'contentCrab');
 
 		this.symbolLookup = symbolLookup;
 
