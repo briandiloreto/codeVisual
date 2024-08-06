@@ -1,6 +1,5 @@
-import { CssClass } from './CssClass';
-import { Cell, Edge, Subgraph, TableNode } from './graph';
-import { EnumSet } from 'enumset';
+
+import { Cell, CssClass, Edge, Subgraph, TableNode } from './graph';
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;")
@@ -11,13 +10,13 @@ function escapeHtml(s: string): string {
 
 const EMPTY_STRING = "";
 
-class Dot {
-  static generateDotSource(
-    tables: IterableIterator<TableNode>,
-    edges: IterableIterator<Edge>,
+export class Dot {
+  static generateDotSourceString(
+    tables: TableNode[],
+    edges: Edge[],
     subgraphs: Subgraph[]
   ): string {
-    const tablesStr = Array.from(tables)
+    const tablesStr = tables
       .map(table => {
         return `
     "${table.id}" [id="${table.id}", label=<
@@ -84,8 +83,8 @@ digraph {
     }
   }
 
-  static processEdges(edges: IterableIterator<Edge>): string {
-    return Array.from(edges)
+  static processEdges(edges: Edge[]): string {
+    return edges
       .map(edge => {
         const from = `${edge.from[0]}:"${edge.from[1]}_${edge.from[2]}"`;
         const to = `${edge.to[0]}:"${edge.to[1]}_${edge.to[2]}"`;
@@ -116,19 +115,19 @@ digraph {
       .join("\n");
   }
 
-  static cssClasses(classes: EnumSet<CssClass>): string {
-    if (classes.isEmpty()) {
+  static cssClasses(classes: CssClass[]): string {
+    if (classes.length == 0) {
       return "";
     } else {
-      return `class="${Array.from(classes).map(c => c.toStr()).join(" ")}"`;
+      return `class="${Array.from(classes).map(c => c.toString()).join(" ")}"`;
     }
   }
 
-  static cssClassesHref(classes: EnumSet<CssClass>): string {
-    if (classes.isEmpty()) {
+  static cssClassesHref(classes: CssClass[]): string {
+    if (classes.length == 0) {
       return "";
     } else {
-      return `href="remove_me_url.${Array.from(classes).map(c => c.toStr()).join(".")}"`;
+      return `href="remove_me_url.${Array.from(classes).map(c => c.toString()).join(".")}"`;
     }
   }
 }

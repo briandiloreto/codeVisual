@@ -5,6 +5,7 @@ import { omit } from 'lodash';
 import { retryCommand } from './utils/command';
 import { SymbolsByFileId } from './utils/symbol-lookup';
 import { GraphGenerator } from '../codevisual';
+import { GraphGeneratorRust } from './rust/generatorRust';
 import { Ignore } from 'ignore';
 import * as path from "path";
 
@@ -17,11 +18,13 @@ const isWindows = process.platform === 'win32';
 
 export class Generator {
   private root: string;
-  private inner: GraphGenerator;
+  //private inner: GraphGenerator;
+  private inner: GraphGeneratorRust;
 
   public constructor(root: vscode.Uri, lang: string) {
     this.root = normalizedPath(root.path);
-    this.inner = new GraphGenerator(this.root, lang);
+    //this.inner = new GraphGenerator(this.root, lang);
+    this.inner = new GraphGeneratorRust(this.root, lang);
   }
 
   public async generateCallGraph(
@@ -278,6 +281,7 @@ export class Generator {
 
         const itemNormalizedPath = normalizedPath(item.uri.path);
         this.inner.add_outgoing_calls(itemNormalizedPath, item.selectionRange.start, calls);
+        
         funcMap.get(itemNormalizedPath)!.visitFunc(item.selectionRange, FuncCallDirection.OUTGOING);
 
         calls = calls

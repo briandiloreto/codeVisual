@@ -1,136 +1,124 @@
-import { FileOutline, TableNode, Cell, CssClass, Style } from './graph';
-import { DocumentSymbol, SymbolKind } from 'vscode-languageserver-types';
+import { TableNode, Cell, CssClass, Style } from './graph';
+import { FileOutline } from './types';
+import * as vscode from 'vscode';
 
-interface Language {
-    shouldFilterOutFile(file: string): boolean;
-    fileRepr(file: FileOutline): TableNode;
-    symbolRepr(fileId: number, symbol: DocumentSymbol): Cell;
-    filterSymbol(symbol: DocumentSymbol): boolean;
-    symbolStyle(symbol: DocumentSymbol): Style;
+export interface Language {
+  shouldFilterOutFile(file: string): boolean;
+  fileRepr(file: FileOutline): TableNode;
+  symbolRepr(fileId: number, symbol: vscode.DocumentSymbol): Cell;
+  filterSymbol(symbol: vscode.DocumentSymbol): boolean;
+  symbolStyle(symbol: vscode.DocumentSymbol): Style;
 }
 
-class DefaultLang implements Language {
-    shouldFilterOutFile(file: string): boolean {
+export class DefaultLang implements Language {
+  shouldFilterOutFile(file: string): boolean {
+    return false;
+  }
+
+  fileRepr(file: FileOutline): TableNode {
+    const sections = file.symbols
+      .filter(symbol => this.filterSymbol(symbol))
+      .map(symbol => this.symbolRepr(file.id, symbol));
+
+    return {
+      id: file.id,
+      title: file.path.split('/').pop() || '',
+      sections: sections,
+    } as TableNode;
+  }
+
+  symbolRepr(fileId: number, symbol: vscode.DocumentSymbol): Cell {
+    const children = symbol.children
+      .filter(s => symbol.kind === vscode.SymbolKind.Interface || this.filterSymbol(s))
+      .map(symbol => this.symbolRepr(fileId, symbol));
+
+    const range = symbol.selectionRange;
+    
+    return {
+      rangeStart: [ range.start.line, range.start.character ],
+      rangeEnd: [ range.end.line, range.end.character ],
+      style: this.symbolStyle(symbol),
+      title: symbol.name,
+      children: children,
+    } as Cell;
+  }
+
+  filterSymbol(symbol: vscode.DocumentSymbol): boolean {
+  switch (symbol.kind) {
+      case vscode.SymbolKind.Constant:
+      case vscode.SymbolKind.Variable:
+      case vscode.SymbolKind.Field:
+      case vscode.SymbolKind.Property:
+      case vscode.SymbolKind.EnumMember:
         return false;
+      default:
+        return true;
     }
+  }
 
-    fileRepr(file: FileOutline): TableNode {
-        const sections = file.symbols
-            .filter(symbol => this.filterSymbol(symbol))
-            .map(symbol => this.symbolRepr(file.id, symbol));
-
+  symbolStyle(symbol: vscode.DocumentSymbol): Style {
+    switch (symbol.kind) {
+      case vscode.SymbolKind.Module:
         return {
-            id: file.id,
-            title: file.path.split('/').pop() || '',
-            sections: sections,
+            rounded: true,
+            classes: [CssClass.Cell, CssClass.Module],
         };
-    }
-
-    symbolRepr(fileId: number, symbol: DocumentSymbol): Cell {
-        const children = symbol.children
-            .filter(s => symbol.kind === SymbolKind.Interface || this.filterSymbol(s))
-            .map(symbol => this.symbolRepr(fileId, symbol));
-
-        const range = symbol.selectionRange;
-
+      case vscode.SymbolKind.Function:
         return {
-            rangeStart: { line: range.start.line, character: range.start.character },
-            rangeEnd: { line: range.end.line, character: range.end.character },
-            style: this.symbolStyle(symbol),
-            title: symbol.name,
-            children: children,
+            rounded: true,
+            classes: [CssClass.Cell, CssClass.Function, CssClass.Clickable],
         };
-    }
-
-    filterSymbol(symbol: DocumentSymbol): boolean {
-        switch (symbol.kind) {
-            case SymbolKind.Constant:
-            case SymbolKind.Variable:
-            case SymbolKind.Field:
-            case SymbolKind.Property:
-            case SymbolKind.EnumMember:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    symbolStyle(symbol: DocumentSymbol): Style {
-        switch (symbol.kind) {
-            case SymbolKind.Module:
-                return {
-                    rounded: true,
-                    classes: CssClass.Cell | CssClass.Module,
-                };
-            case SymbolKind.Function:
-                return {
-                    rounded: true,
-                    classes: CssClass.Cell | CssClass.Function | CssClass.Clickable,
-                };
-            case SymbolKind.Method:
-                return {
-                    rounded: true,
-                    classes: CssClass.Cell | CssClass.Method | CssClass.Clickable,
-                };
-            case SymbolKind.Constructor:
-                return {
-                    rounded: true,
-                    classes: CssClass.Cell | CssClass.Constructor | CssClass.Clickable,
-                };
-            case SymbolKind.Interface:
-                return {
-                    border: 0,
-                    rounded: true,
-                    classes: CssClass.Cell | CssClass.Interface | CssClass.Clickable,
-                };
-            case SymbolKind.Enum:
-                return {
-                    icon: 'E',
-                    classes: CssClass.Cell | CssClass.Type,
-                };
-            case SymbolKind.Struct:
-                return {
-                    icon: 'S',
-                    classes: CssClass.Cell | CssClass.Type,
-                };
-            case SymbolKind.Class:
-                return {
-                    icon: 'C',
-                    classes: CssClass.Cell | CssClass.Type,
-                };
-            case SymbolKind.TypeParameter:
-                return {
-                    icon: 'T',
-                    classes: CssClass.Cell | CssClass.Type,
-                };
-            case SymbolKind.Field:
-                return {
-                    icon: 'f',
-                    classes: CssClass.Cell | CssClass.Property,
-                };
-            case SymbolKind.Property:
-                return {
-                    icon: 'p',
-                    classes: CssClass.Cell | CssClass.Property,
-                };
-            default:
-                return {
-                    rounded: true,
-                    classes: CssClass.Cell,
-                };
-        }
-    }
+      case vscode.SymbolKind.Method:
+        return {
+            rounded: true,
+            classes: [CssClass.Cell, CssClass.Method, CssClass.Clickable],
+        };
+      case vscode.SymbolKind.Constructor:
+        return {
+            rounded: true,
+            classes: [CssClass.Cell, CssClass.Constructor, CssClass.Clickable],
+        };
+      case vscode.SymbolKind.Interface:
+        return {
+            border: 0,
+            rounded: true,
+            classes: [CssClass.Cell, CssClass.Interface, CssClass.Clickable],
+        };
+      case vscode.SymbolKind.Enum:
+        return {
+            icon: 'E',
+            classes: [CssClass.Cell, CssClass.Type],
+        } as Style;
+      case vscode.SymbolKind.Struct:
+        return {
+            icon: 'S',
+            classes: [CssClass.Cell, CssClass.Type],
+        } as Style;
+      case vscode.SymbolKind.Class:
+        return {
+            icon: 'C',
+            classes: [CssClass.Cell, CssClass.Type],
+        } as Style;
+      case vscode.SymbolKind.TypeParameter:
+        return {
+            icon: 'T',
+            classes: [CssClass.Cell, CssClass.Type],
+        } as Style;
+      case vscode.SymbolKind.Field:
+        return {
+            icon: 'f',
+            classes: [CssClass.Cell, CssClass.Property],
+        } as Style;
+      case vscode.SymbolKind.Property:
+        return {
+            icon: 'p',
+            classes: [CssClass.Cell, CssClass.Property],
+        } as Style;
+    default:
+        return {
+            rounded: true,
+            classes: [CssClass.Cell],
+        };
+      }
+  }
 }
-
-export function languageHandler(lang: string): Language {
-    switch (lang) {
-        case 'Go':
-            return new Go();
-        case 'Rust':
-            return new Rust();
-        default:
-            return new DefaultLang();
-    }
-}
-
-

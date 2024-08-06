@@ -1,7 +1,3 @@
-import { HashSet } from 'typescript-collections';
-import { EnumSet } from 'enumset';
-
-export module dot {}
 
 export interface GenerateSVG {
   generateSvg(
@@ -15,9 +11,9 @@ export interface GenerateSVG {
 export class Edge {
   from: [number, number, number];
   to: [number, number, number];
-  classes: EnumSet<CssClass>;
+  classes: CssClass[];
 
-  constructor(from: [number, number, number], to: [number, number, number], classes: EnumSet<CssClass>) {
+  constructor(from: [number, number, number], to: [number, number, number], classes: CssClass[]) {
     this.from = from;
     this.to = to;
     this.classes = classes;
@@ -51,9 +47,9 @@ export class Cell {
     this.children = children;
   }
 
-  highlight(cells: HashSet<[number, number]>) {
-    if (cells.contains(this.rangeStart)) {
-      this.style.classes.add(CssClass.Highlight);
+  highlight(cells: Set<[number, number]>) {
+    if (cells.has(this.rangeStart)) {
+      this.style.classes.push(CssClass.Highlight);
     }
     this.children.forEach(child => child.highlight(cells));
   }
@@ -70,7 +66,7 @@ export class TableNode {
     this.sections = sections;
   }
 
-  highlightCells(cells: HashSet<[number, number]>) {
+  highlightCells(cells: Set<[number, number]>) {
     this.sections.forEach(section => section.highlight(cells));
   }
 }
@@ -91,9 +87,9 @@ export class Style {
   rounded: boolean;
   border?: number;
   icon?: string;
-  classes: EnumSet<CssClass>;
+  classes: CssClass[];
 
-  constructor(rounded: boolean, border?: number, icon?: string, classes: EnumSet<CssClass> = new EnumSet()) {
+  constructor(rounded: boolean, border?: number, icon?: string, classes: CssClass[] = []) {
     this.rounded = rounded;
     this.border = border;
     this.icon = icon;

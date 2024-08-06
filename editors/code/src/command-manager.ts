@@ -31,7 +31,7 @@ export class CommandManager {
     this.graphvizView = new InteractiveWebviewGenerator(context);
   }
 
-  public async generateCallGraphTest(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
+  public async generateCallGraph(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
 		let cancelled = false;
 
 		// selecting no file is actually selecting the entire workspace
@@ -161,7 +161,7 @@ export class CommandManager {
 		});
 	}
 
-  public async generateCallGraph(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
+  public async generateCallGraphOld(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
 		let cancelled = false;
 
 		// selecting no file is actually selecting the entire workspace
