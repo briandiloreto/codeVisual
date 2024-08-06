@@ -87,7 +87,7 @@ export class CommandManager {
 
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			title: "Visual X: Generating call graph",
+			title: "Visual: Generating call graph",
 			cancellable: true,
 		}, (progress, token) => {
 			token.onCancellationRequested(() => cancelled = true);
@@ -96,6 +96,8 @@ export class CommandManager {
 			return generator.generateCallGraph(files.get(lang)!, progress, token);
 		})
 		.then(([dot, svg, symbolLookup]) => {
+      console.log('Dot:', dot);
+      
 			if (cancelled) { return; }
 
 			// const panel = new CallGraphPanel(this.context.extensionUri);

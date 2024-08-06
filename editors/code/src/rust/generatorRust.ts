@@ -11,23 +11,23 @@ export class GraphGeneratorRust {
   files: Map<string, FileOutline>;
   nextFileId: number;
   
-  lang: DefaultLang;
-
   incomingCalls: Map<SymbolLocation, vscode.CallHierarchyIncomingCall[]>;
   outgoingCalls: Map<SymbolLocation, vscode.CallHierarchyOutgoingCall[]>;
   interfaces: Map<SymbolLocation, SymbolLocation[]>;
 
   highlights: Map<number, Set<[number, number]>>;
+  lang: DefaultLang;
 
   constructor(root: string, lang: string) {
     this.root = root;
     this.files = new Map<string, FileOutline>();
     this.nextFileId = 1;
+    
     this.incomingCalls = new Map<SymbolLocation, vscode.CallHierarchyIncomingCall[]>();
     this.outgoingCalls = new Map<SymbolLocation, vscode.CallHierarchyOutgoingCall[]>();
     this.interfaces = new Map<SymbolLocation, SymbolLocation[]>();
-    this.highlights = new Map<number, Set<[number, number]>>();
 
+    this.highlights = new Map<number, Set<[number, number]>>();
     this.lang = new DefaultLang();
   }
 
