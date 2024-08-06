@@ -137,7 +137,10 @@ export class Generator {
     }
 
     const dotRust = this.innerRust.generate_dot_source();
-    const dot = this.inner.generate_dot_source(); 
+    const dot = this.inner.generate_dot_source();
+    console.log('Dot original:', dot);
+    console.log('Dot migrated:', dotRust);
+
     const dotRendered = await viz.then(viz => viz.renderString(dot, renderOptions));
 
     return [dot, dotRendered, symbolsByFileId];

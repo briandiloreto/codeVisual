@@ -47,11 +47,11 @@ Immutable.js: While primarily focused on immutability, it also provides various 
     - Crabviz webview
         - Files are in folders /webviewCrabviz and /utils
         - SVG is generated ahead of time and staticallly inserted into HTML package
-        
     - Interactive webview
         - Files are in /webviewInteractive
         - SVG is generated dynamically using d3-graphviz and animated between versions
         - Build the dependencies using scripts/updateDependencies.js
     - The Rust code to generate the DOT file has been translated to Typescript and is located in folder /dotGenerator
-    
+    - The original Rust code compiles to folder /codevisual
+
     

@@ -96,21 +96,20 @@ export class CommandManager {
 		}, (progress, token) => {
 			token.onCancellationRequested(() => cancelled = true);
 
-      // Generate DOT (and optionally static SVG for the DOT)
+      // Generate DOT and static SVG
 			const generator = new Generator(root.uri, lang);
 			return generator.generateCallGraph(files.get(lang)!, progress, token);
 		})
 		.then(([dot, svg, symbolLookup]) => {
-      console.log('Dot:', dot);
-
 			if (cancelled) { return; }
 
+			// Render graph in viewview
       if (this.isRenderSvg) {
-        // Render static SVG
+        // Render static SVG in crabviz panel
         const panel = new CallGraphPanel(this.context.extensionUri);
         panel.showCallGraph(svg, false, symbolLookup);
       } else {
-        // Generate SVG in panel
+        // Generate SVG in panel in interactive panel
         const args =  {};
         const options : {
           document?: vscode.TextDocument,
