@@ -5,7 +5,7 @@ import { omit } from 'lodash';
 import { retryCommand } from './utils/command';
 import { SymbolsByFileId } from './utils/symbol-lookup';
 import { GraphGenerator } from '../codevisual';
-import { GraphGeneratorRust } from './rust/generatorRust';
+import { GraphGeneratorRust } from './dotGenerator/dotGenerator';
 import { Ignore } from 'ignore';
 import * as path from "path";
 
@@ -18,13 +18,13 @@ const isWindows = process.platform === 'win32';
 
 export class Generator {
   private root: string;
-  //private inner: GraphGenerator;
-  private inner: GraphGeneratorRust;
+  private inner: GraphGenerator;
+  private innerRust: GraphGeneratorRust;
 
   public constructor(root: vscode.Uri, lang: string) {
     this.root = normalizedPath(root.path);
-    //this.inner = new GraphGenerator(this.root, lang);
-    this.inner = new GraphGeneratorRust(this.root, lang);
+    this.inner = new GraphGenerator(this.root, lang);
+    this.innerRust = new GraphGeneratorRust(this.root, lang);
   }
 
   public async generateCallGraph(
@@ -57,6 +57,7 @@ export class Generator {
 
       const filePath = normalizedPath(file.path);
 
+      this.innerRust.add_file(filePath, symbols);
       if (!this.inner.add_file(filePath, symbols)) {
         finishedCount += 1;
         progress.report({ message: `${finishedCount} / ${files.length}`, increment: 100 / files.length });
@@ -109,6 +110,7 @@ export class Generator {
                   locations.forEach(l => l.uri = l.uri.with({ path: normalizedPath(l.uri.path )}));
                 }
 
+                this.innerRust.add_interface_implementations(filePath, symbol.selectionRange.start, locations);
                 this.inner.add_interface_implementations(filePath, symbol.selectionRange.start, locations);
               })
               .then(undefined, err => {
@@ -134,7 +136,8 @@ export class Generator {
       progress.report({ message: `${finishedCount} / ${files.length}`, increment: 100 / files.length });
     }
 
-    const dot = this.inner.generate_dot_source();
+    const dotRust = this.innerRust.generate_dot_source();
+    const dot = this.inner.generate_dot_source(); 
     const dotRendered = await viz.then(viz => viz.renderString(dot, renderOptions));
 
     return [dot, dotRendered, symbolsByFileId];
@@ -175,13 +178,16 @@ export class Generator {
       symbols = this.filterSymbols(symbols, funcs);
 
       this.inner.add_file(normalizedPath(file.uri.path), symbols);
+      this.innerRust.add_file(normalizedPath(file.uri.path), symbols);
     }
 
     for await (const item of items) {
       this.inner.highlight(normalizedPath(item.uri.path), item.selectionRange.start);
+      this.innerRust.highlight(normalizedPath(item.uri.path), item.selectionRange.start);
     }
 
     const dot = this.inner.generate_dot_source();
+    const dotRust = this.innerRust.generate_dot_source();
 
     return await viz.then(viz => viz.renderString(dot, renderOptions));
   }
@@ -221,6 +227,7 @@ export class Generator {
 
         const itemNormalizedPath = normalizedPath(item.uri.path);
         this.inner.add_incoming_calls(itemNormalizedPath, symbolStart, calls);
+        this.innerRust.add_incoming_calls(itemNormalizedPath, symbolStart, calls);
         funcMap.get(itemNormalizedPath)?.add(keyFromPosition(symbolStart));
 
         calls = calls
@@ -247,6 +254,7 @@ export class Generator {
 
         const itemNormalizedPath = normalizedPath(item.uri.path);
         this.inner.add_incoming_calls(itemNormalizedPath, item.selectionRange.start, calls);
+        this.innerRust.add_incoming_calls(itemNormalizedPath, item.selectionRange.start, calls);
         funcMap.get(itemNormalizedPath)!.visitFunc(item.selectionRange, FuncCallDirection.INCOMING);
 
         calls = calls
@@ -281,6 +289,7 @@ export class Generator {
 
         const itemNormalizedPath = normalizedPath(item.uri.path);
         this.inner.add_outgoing_calls(itemNormalizedPath, item.selectionRange.start, calls);
+        this.innerRust.add_outgoing_calls(itemNormalizedPath, item.selectionRange.start, calls);
         
         funcMap.get(itemNormalizedPath)!.visitFunc(item.selectionRange, FuncCallDirection.OUTGOING);
 

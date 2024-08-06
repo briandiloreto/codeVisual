@@ -10,7 +10,7 @@ import { Utils } from "vscode-uri";
 //import { TextEncoder } from "text-encoding";
 import { isObject } from "lodash";
 import PreviewPanel from "./previewPanel";
-import prepareHTML from "../prepareHTML";
+import prepareHTML from "./prepareHTML";
 
 const webviewPanelContent = require("../../contentVisual/index.html").default;
 

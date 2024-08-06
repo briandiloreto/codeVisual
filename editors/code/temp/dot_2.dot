@@ -1,0 +1,101 @@
+igraph {
+    graph [
+        rankdir = "LR"
+        ranksep = 2.0
+        fontname = "Arial"
+    ];
+    node [
+        fontsize = "16"
+        fontname = "Arial"
+        shape = "plaintext"
+        style = "rounded, filled"
+    ];
+    edge [
+        label = " "
+    ];
+
+    
+    "1" [id="1", label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="8" CELLPADDING="4">
+        <TR><TD WIDTH="230" BORDER="0" CELLPADDING="6" HREF="remove_me_url.title">extension.ts</TD></TR>
+        
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:6_6" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"   BGCOLOR="green" href="remove_me_url.type.cell">
+                 <TR><TD PORT="6_6" BORDER="0" ><B>C</B>  NoteComment</TD></TR>
+     <TR><TD PORT="10_1" ID="1:10_1"  STYLE="ROUNDED" href="remove_me_url.constructor.clickable.cell">constructor</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:22_16" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.function.clickable.cell">
+                 <TR><TD PORT="22_16" BORDER="0" >activate</TD></TR>
+     <TR><TD PORT="29_2" ID="1:29_2"  STYLE="ROUNDED" href="remove_me_url.method.clickable.cell">provideCommentingRanges</TD></TR>
+     <TR><TD PORT="134_10" ID="1:134_10"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">replyNote</TD></TR>
+
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:86_85" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.function.clickable.cell">
+                 <TR><TD PORT="86_85" BORDER="0" >vscode.commands.registerCommand('mywiki.cancelsaveNote') callback</TD></TR>
+     <TR><TD PORT="91_56" ID="1:91_56"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">comment.parent.comments.map() callback</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+     <TR><TD PORT="35_81" ID="1:35_81"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">vscode.commands.registerCommand('mywiki.createNote') callback</TD></TR>
+     <TR><TD PORT="82_81" ID="1:82_81"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">vscode.commands.registerCommand('mywiki.deleteNote') callback</TD></TR>
+
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:69_88" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.function.clickable.cell">
+                 <TR><TD PORT="69_88" BORDER="0" >vscode.commands.registerCommand('mywiki.deleteNoteComment') callback</TD></TR>
+     <TR><TD PORT="75_43" ID="1:75_43"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">thread.comments.filter() callback</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+     <TR><TD PORT="130_78" ID="1:130_78"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">vscode.commands.registerCommand('mywiki.dispose') callback</TD></TR>
+
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:116_79" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.function.clickable.cell">
+                 <TR><TD PORT="116_79" BORDER="0" >vscode.commands.registerCommand('mywiki.editNote') callback</TD></TR>
+     <TR><TD PORT="121_56" ID="1:121_56"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">comment.parent.comments.map() callback</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:51_82" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.function.clickable.cell">
+                 <TR><TD PORT="51_82" BORDER="0" >vscode.commands.registerCommand('mywiki.finishDraft') callback</TD></TR>
+     <TR><TD PORT="62_58" ID="1:62_58"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">map() callback</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+     <TR><TD PORT="39_80" ID="1:39_80"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">vscode.commands.registerCommand('mywiki.replyNote') callback</TD></TR>
+
+            <TR><TD BORDER="0" CELLPADDING="0">
+            <TABLE ID="1:101_79" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.function.clickable.cell">
+                 <TR><TD PORT="101_79" BORDER="0" >vscode.commands.registerCommand('mywiki.saveNote') callback</TD></TR>
+     <TR><TD PORT="106_56" ID="1:106_56"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">comment.parent.comments.map() callback</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+     <TR><TD PORT="43_81" ID="1:43_81"  STYLE="ROUNDED" href="remove_me_url.function.clickable.cell">vscode.commands.registerCommand('mywiki.startDraft') callback</TD></TR>
+            </TABLE>
+            </TD></TR>
+            
+        <TR><TD CELLSPACING="0" HEIGHT="1" WIDTH="1" FIXEDSIZE="TRUE" STYLE="invis"></TD></TR>
+        </TABLE>
+    >];
+                    
+
+    
+        subgraph "cluster_comment-sample/src" {
+            label = "comment-sample/src";
+
+            1
+
+            
+        };
+                    
+
+    1:"134_10" -> 1:"6_6" [id="1:134_10 -> 1:6_6"];
+    1:"22_16" -> 1:"134_10" [id="1:22_16 -> 1:134_10"];
+    1:"22_16" -> 1:"6_6" [id="1:22_16 -> 1:6_6"];
+}

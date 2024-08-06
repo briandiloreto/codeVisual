@@ -1,0 +1,19 @@
+------------------------------------------------------------------------------
+# TODO:
+
+- Rewrite (in Typescript) or improve Crabviz dot generator code (in Rust):
+    - Fix issue with not showing funtion calls from anonymous functions
+    - Handle expand/collapse of nodes by updating the DOT appropriately
+
+- Use d3-graphviz to generate SVG from dot and animate changes
+- Add buttons as children of SVG elements to handle expand/collapse and hide/show  of nodes, and create functions to handle these interactions
+- Ability to show call-chains to requested depth
+- Ability to show variables alongside of functions/methods in a file
+- Ability to highlight referencess of a variable
+- Add interactions with code base:
+    - Jump to symbol definition/declaration
+    - Graph is panned/zoom automatically and nodes are highlighted to follow editor actions
+
+- Maintain json files for each graph to describe expansion state and hidden variables/functions, etc
+- Graph description files should indicate a priority, to indicate which graph to use when highlighting editor actions
+

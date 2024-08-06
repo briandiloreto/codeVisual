@@ -5,12 +5,12 @@ import { Ignore } from 'ignore';
 import { readIgnores } from './utils/ignore';
 import { FileClassifier } from './utils/file-classifier';
 import { Generator } from './generator';
-import { CallGraphPanel } from './webview';
+import { CallGraphPanel } from './webviewCrabviz/webview';
 import { getLanguages } from './utils/languages';
 
 
-import InteractiveWebviewGenerator from "./features/interactiveWebview";
-import PreviewPanel from "./features/previewPanel";
+import InteractiveWebviewGenerator from "./webviewInteractive/interactiveWebview";
+import PreviewPanel from "./webviewInteractive/previewPanel";
 import * as settings from "./settings";
 
 export class CommandManager {
@@ -23,6 +23,10 @@ export class CommandManager {
 
   private graphvizView: InteractiveWebviewGenerator;
 
+  // Originally, viz-js was used to render the DOT to static SVG before building the Crabviz webview page
+  // Now the DOT is rendered to SVG inside the webview using d3-graphviz in the webview page taken from the project vscode-interactive-graphviz
+  private isRenderSvg = false;
+
   public constructor(context: vscode.ExtensionContext) {
     this.context = context;
 		this.ignores = new Map();
@@ -31,7 +35,7 @@ export class CommandManager {
     this.graphvizView = new InteractiveWebviewGenerator(context);
   }
 
-  public async generateCallGraph(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
+  public async handleCallGraph(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
 		let cancelled = false;
 
 		// selecting no file is actually selecting the entire workspace
@@ -92,54 +96,57 @@ export class CommandManager {
 		}, (progress, token) => {
 			token.onCancellationRequested(() => cancelled = true);
 
+      // Generate DOT (and optionally static SVG for the DOT)
 			const generator = new Generator(root.uri, lang);
 			return generator.generateCallGraph(files.get(lang)!, progress, token);
 		})
 		.then(([dot, svg, symbolLookup]) => {
       console.log('Dot:', dot);
-      
+
 			if (cancelled) { return; }
 
-			// const panel = new CallGraphPanel(this.context.extensionUri);
-			// panel.showCallGraph(svg, false, symbolLookup);
+      if (this.isRenderSvg) {
+        // Render static SVG
+        const panel = new CallGraphPanel(this.context.extensionUri);
+        panel.showCallGraph(svg, false, symbolLookup);
+      } else {
+        // Generate SVG in panel
+        const args =  {};
+        const options : {
+          document?: vscode.TextDocument,
+          uri?: vscode.Uri,
+          content?: string,
+          // eslint-disable-next-line no-unused-vars
+          callback?: (panel: PreviewPanel) => void,
+          allowMultiplePanels?: boolean,
+          title?: string,
+          search?: any,
+          displayColumn?: vscode.ViewColumn | {
+            viewColumn: vscode.ViewColumn;
+            preserveFocus?: boolean | undefined;
+          }
+        } = {};
 
-      const args =  {};
-      const options : {
-        document?: vscode.TextDocument,
-        uri?: vscode.Uri,
-        content?: string,
-        // eslint-disable-next-line no-unused-vars
-        callback?: (panel: PreviewPanel) => void,
-        allowMultiplePanels?: boolean,
-        title?: string,
-        search?: any,
-        displayColumn?: vscode.ViewColumn | {
-          viewColumn: vscode.ViewColumn;
-          preserveFocus?: boolean | undefined;
+        if (!options.content
+          && !options.document
+          && !options.uri
+          && vscode.window.activeTextEditor?.document) {
+          options.document = vscode.window.activeTextEditor.document;
         }
-      } = {};
 
-      if (!options.content
-        && !options.document
-        && !options.uri
-        && vscode.window.activeTextEditor?.document) {
-        options.document = vscode.window.activeTextEditor.document;
-      }
+        if (!options.uri && options.document) {
+          options.uri = options.document.uri;
+        }
 
-      if (!options.uri && options.document) {
-        options.uri = options.document.uri;
-      }
+        if (typeof options.displayColumn === "object" && options.displayColumn.preserveFocus === undefined) {
+          options.displayColumn.preserveFocus = settings.extensionConfig().get("preserveFocus"); // default to user settings
+        }
 
-      if (typeof options.displayColumn === "object" && options.displayColumn.preserveFocus === undefined) {
-        options.displayColumn.preserveFocus = settings.extensionConfig().get("preserveFocus"); // default to user settings
-      }
-
-      const execute = (o:any) => { 
-        this.graphvizView.revealOrCreatePreview(
-          o.displayColumn,
-          o.uri,
-          o,
-        )
+        const execute = (o:any) => { 
+          this.graphvizView.revealOrCreatePreview(
+            o.displayColumn,
+            o.uri,
+            o)
           .then((webpanel: PreviewPanel) => {
             // trigger dot render on page load success
             // just in case webpanel takes longer to load, wait for page
@@ -155,87 +162,16 @@ export class CommandManager {
               o.callback(webpanel);
             }
           });
-      };
+        };
 
-      // Set content and render
-      options.content = dot;
-      execute(options);
+        // Set content and render
+        options.content = dot;
+        execute(options);
+      }
 		});
 	}
 
-  public async generateCallGraphOld(contextSelection: vscode.Uri, allSelections: vscode.Uri[]) {
-		let cancelled = false;
-
-		// selecting no file is actually selecting the entire workspace
-		if (allSelections.length === 0) {
-			allSelections.push(contextSelection);
-		}
-
-		const root = vscode.workspace.workspaceFolders!
-			.find(folder => contextSelection.path.startsWith(folder.uri.path))!;
-
-		const ig = await this.readIgnores(root);
-
-		for await (const uri of allSelections) {
-			if (!uri.path.startsWith(root.uri.path)) {
-				vscode.window.showErrorMessage("Can not generate call graph across multiple workspace folders");
-				return;
-			}
-		}
-
-		// classify files by programming language
-
-		const files = await vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: "Detecting project languages",
-			cancellable: true
-		}, (_, token) => {
-			token.onCancellationRequested(() => cancelled = true);
-
-			const classifer = new FileClassifier(root.uri.path, this.languages, ig);
-			return classifer.classifyFilesByLanguage(allSelections, token);
-		});
-
-		if (cancelled) {
-			return;
-		}
-
-		const languages = Array.from(files.keys()).map(lang => ({ label: lang }));
-		let lang: string;
-		if (languages.length > 1) {
-			const selectedItem = await vscode.window.showQuickPick(languages, {
-				title: "Pick a language to generate call graph",
-			});
-
-			if (!selectedItem) {
-				return;
-			}
-			lang = selectedItem.label;
-		} else if (languages.length === 1) {
-			lang = languages[0].label;
-		} else {
-			return;
-		}
-
-		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: "Visual: Generating call graph",
-			cancellable: true,
-		}, (progress, token) => {
-			token.onCancellationRequested(() => cancelled = true);
-
-			const generator = new Generator(root.uri, lang);
-			return generator.generateCallGraph(files.get(lang)!, progress, token);
-		})
-		.then(([dot, svg, symbolLookup]) => {
-			if (cancelled) { return; }
-
-			const panel = new CallGraphPanel(this.context.extensionUri);
-			panel.showCallGraph(svg, false, symbolLookup);
-		});
-	}
-
-  public async generateFuncCallGraph(editor: vscode.TextEditor) {
+  public async handleCallGraphForFunction(editor: vscode.TextEditor) {
 		const uri = editor.document.uri;
 		const anchor = editor.selection.start;
 

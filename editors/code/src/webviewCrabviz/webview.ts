@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { retryCommand } from './utils/command';
-import { SymbolsByFileId } from './utils/symbol-lookup';
+import { retryCommand } from '../utils/command';
+import { SymbolsByFileId } from '../utils/symbol-lookup';
 import { ViewColumn } from 'vscode';
 
 export class CallGraphPanel {

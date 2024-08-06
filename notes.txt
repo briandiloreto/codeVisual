@@ -1,19 +1,18 @@
 
-# Update Rust
+------------------------------------------------------------------------------
+# Rust
 rustup update
 
+------------------------------------------------------------------------------
 # Build everything using webpack and webpack config file to compile Rust to web assembly and package with the extension
 npm run compile
 
-# Build dependencies for VS Code webview
-node .\scripts\updateDependencies.js
+    # Build dev version at target/debug
+    cargo build --features vscode
 
-        # Build dev version at target/debug
-        cargo build --features vscode
-
-        # Build release version at target/release and package at pkg
-        cargo install wasm-pack
-        wasm-pack build --features vscode
+    # Build release version at target/release and package at pkg
+    cargo install wasm-pack
+    wasm-pack build --features vscode
 
 
 ------------------------------------------------------------------------------
@@ -21,34 +20,6 @@ node .\scripts\updateDependencies.js
 vscode.commands.executeCommand('vscode.executeDefinitionProvider')
 vscode.commands.executeCommand('vscode.executeReferenceProvider')
 vscode.commands.executeCommand('vscode.executeImplementationProvider')
-
-------------------------------------------------------------------------------
-# TODO:
-
-- Rewrite (in Typescript) or improve Crabviz dot generator code (in Rust):
-    - Fix issue with not showing funtion calls from anonymous functions
-    - Handle expand/collapse of nodes by updating the DOT appropriately
-
-- Use d3-graphviz to generate SVG from dot and animate changes
-- Add buttons as children of SVG elements to handle expand/collapse and hide/show  of nodes, and create functions to handle these interactions
-- Ability to show call-chains to requested depth
-- Ability to show variables alongside of functions/methods in a file
-- Ability to highlight referencess of a variable
-- Add interactions with code base:
-    - Jump to symbol definition/declaration
-    - Graph is panned/zoom automatically and nodes are highlighted to follow editor actions
-
-- Maintain json files for each graph to describe expansion state and hidden variables/functions, etc
-- Graph description files should indicate a priority, to indicate which graph to use when highlighting editor actions
-
-
----------------------
-# Emails
-
-tilehoard@gmail.com P2357!tilehoard
-smoothrollergame@gmail.com P2357!smooth
-tilingking@gmail.com P2357!tilingking
-talktagon1@gmail.com P2357!talktagon
 
 
 ------------------------------------------------------------------------------
@@ -64,3 +35,23 @@ typescript-collections: A mature library offering various data structures like d
 Standard Collections Library for TypeScript (scl.js): This library aims to mimic the interfaces and behaviors of standard collections found in other languages, bringing familiarity to TypeScript developers.
 Immutable.js: While primarily focused on immutability, it also provides various collection types with robust TypeScript definitions.
 
+
+------------------------------------------------------------------------------
+# Project structure
+
+8/5/2024
+    - The project in the root foler is a Rust project
+    - The project for the VS Code extension is in the subdirectory editors/code. Both projects are compiled and run from there using webpack
+    - In the extension project, there are two versions of the VS Code webview, the original Crabviz one and a different interactive
+        webview that uses d3-graphviz to animate transitions between graphs, These are located respectively at /contentCrab and /contentVisual
+    - Crabviz webview
+        - Files are in folders /webviewCrabviz and /utils
+        - SVG is generated ahead of time and staticallly inserted into HTML package
+        
+    - Interactive webview
+        - Files are in /webviewInteractive
+        - SVG is generated dynamically using d3-graphviz and animated between versions
+        - Build the dependencies using scripts/updateDependencies.js
+    - The Rust code to generate the DOT file has been translated to Typescript and is located in folder /dotGenerator
+    
+    
