@@ -5,6 +5,8 @@ import { FileOutline, locationIdHierarchyItem, SymbolLocation } from './types';
 import { DefaultLang, Language } from './lang';
 import * as vscode from 'vscode';
 import * as path from 'path';
+//import * as Collections from 'typescript-collections';
+import Collections = require('typescript-collections');
 
 export class GraphGeneratorRust {
   root: string;
@@ -29,6 +31,10 @@ export class GraphGeneratorRust {
 
     this.highlights = new Map<number, Set<[number, number]>>();
     this.lang = new DefaultLang();
+
+
+    // var myQueue = new Collections.Queue<string>();
+    // myQueue.enqueue('1');
   }
 
   should_filter_out_file(filePath: string): boolean {
@@ -106,16 +112,23 @@ export class GraphGeneratorRust {
     tables.forEach(([tid, tbl]) => {
       tbl.sections.forEach(cell => this.collectCellIds(tid, cell, cellIds));
     });
+    console.log('Cell IDs:', cellIds);
 
     const updatedFiles = new Set<string>();
     const insertedSymbols = new Set<[number, number, number]>();
 
     const incomingCalls = Array.from(this.incomingCalls.entries()).flatMap(([callee, callers]) => {
       const to = callee.locationId(files);
+      console.log('Incoming call to:', to);
+
       if (!to || !cellIds.has(to)) return [];
 
       return callers.map(call => {
         let updated;
+        // Incoming calls may start from nested functions, which may not be included in file symbols in some lsp server implementations.
+        // In that case, we add the missing nested symbol to the symbol list.
+        // another approach would be to modify edges to make them start from the outter functions, which is not so accurate.
+
         //const from = call.from.locationId(files);
         const from = locationIdHierarchyItem(call.from, call.from.uri.fsPath, files);
         if (from) {

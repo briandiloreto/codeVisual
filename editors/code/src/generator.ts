@@ -143,7 +143,7 @@ export class Generator {
 
     const dotRendered = await viz.then(viz => viz.renderString(dot, renderOptions));
 
-    return [dot, dotRendered, symbolsByFileId];
+    return [dotRust, dotRendered, symbolsByFileId];
   }
 
   async generateFuncCallGraph(uri: vscode.Uri, anchor: vscode.Position, ig: Ignore): Promise<string | null> {

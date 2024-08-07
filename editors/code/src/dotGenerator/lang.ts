@@ -16,6 +16,7 @@ export class DefaultLang implements Language {
   }
 
   fileRepr(file: FileOutline): TableNode {
+    // Create table sections for each function-like symbol in the file
     const sections = file.symbols
       .filter(symbol => this.filterSymbol(symbol))
       .map(symbol => this.symbolRepr(file.id, symbol));
@@ -28,6 +29,7 @@ export class DefaultLang implements Language {
   }
 
   symbolRepr(fileId: number, symbol: vscode.DocumentSymbol): Cell {
+    // Create a cell to represent this function symbol, creating child cells for each child interface and child function
     const children = symbol.children
       .filter(s => symbol.kind === vscode.SymbolKind.Interface || this.filterSymbol(s))
       .map(symbol => this.symbolRepr(fileId, symbol));
