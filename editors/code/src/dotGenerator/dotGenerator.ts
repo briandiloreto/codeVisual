@@ -5,8 +5,26 @@ import { FileOutline, locationIdHierarchyItem, SymbolLocation } from './types';
 import { DefaultLang, Language } from './lang';
 import * as vscode from 'vscode';
 import * as path from 'path';
-//import * as Collections from 'typescript-collections';
-import Collections = require('typescript-collections');
+
+class ThreeNumbers {
+  a: number;
+  b: number;
+  c: number;
+
+  constructor(public _a: number, public _b: number, public _c: number) {
+    this.a = _a;
+    this.b = _b;
+    this.c = _c;
+  }
+
+  equals(other: ThreeNumbers): boolean {
+      return this.a === other.a && this.b === other.b && this.c === other.c;
+  }
+
+  hashCode(): number {
+      return this.a * 10 + this.b * 100 + this.c * 1000;
+  }
+}
 
 export class GraphGeneratorRust {
   root: string;
@@ -31,10 +49,6 @@ export class GraphGeneratorRust {
 
     this.highlights = new Map<number, Set<[number, number]>>();
     this.lang = new DefaultLang();
-
-
-    // var myQueue = new Collections.Queue<string>();
-    // myQueue.enqueue('1');
   }
 
   should_filter_out_file(filePath: string): boolean {
@@ -108,11 +122,14 @@ export class GraphGeneratorRust {
       return [file.id, table];
     });
 
+
     const cellIds = new Set<[number, number, number]>();
+    //const cellIds = new Set<ThreeNumbers>();
     tables.forEach(([tid, tbl]) => {
       tbl.sections.forEach(cell => this.collectCellIds(tid, cell, cellIds));
     });
     console.log('Cell IDs:', cellIds);
+
 
     const updatedFiles = new Set<string>();
     const insertedSymbols = new Set<[number, number, number]>();
@@ -247,6 +264,11 @@ export class GraphGeneratorRust {
   collectCellIds(tableId: number, cell: Cell, ids: Set<[number, number, number]>): void {
     ids.add([tableId, cell.rangeStart[0], cell.rangeStart[1]]);
     cell.children.forEach(child => this.collectCellIds(tableId, child, ids));
+  }
+
+  collectCellIdsNew(tableId: number, cell: Cell, ids: Set<ThreeNumbers>): void {
+    ids.add(new ThreeNumbers(tableId, cell.rangeStart[0], cell.rangeStart[1]));
+    cell.children.forEach(child => this.collectCellIdsNew(tableId, child, ids));
   }
 
   tryInsertSymbol(item: vscode.CallHierarchyItem, file: FileOutline): boolean {
