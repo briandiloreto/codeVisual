@@ -8,6 +8,7 @@ import { GraphGenerator } from '../codevisual';
 import { GraphGeneratorRust } from './dotGenerator/dotGenerator';
 import { Ignore } from 'ignore';
 import * as path from "path";
+import * as fs from 'fs';
 
 const FUNC_KINDS: readonly vscode.SymbolKind[] = [vscode.SymbolKind.Function, vscode.SymbolKind.Method, vscode.SymbolKind.Constructor];
 
@@ -136,14 +137,30 @@ export class Generator {
       progress.report({ message: `${finishedCount} / ${files.length}`, increment: 100 / files.length });
     }
 
-    const dotRust = this.innerRust.generate_dot_source();
+    const dotTranslated = this.innerRust.generate_dot_source();
     const dot = this.inner.generate_dot_source();
-    console.log('Dot original:', dot);
-    console.log('Dot migrated:', dotRust);
+
+    // Compare generated DOT
+    // console.log('Dot original:', dot);
+    // console.log('Dot translated:', dotTranslated);
+
+    try {
+      const filePath = 'C:\\Users\\brian\\brian\\development\\CodeVisual\\editors\\code\\temp\\dotOriginal.txt';
+      const writeStream = fs.createWriteStream(filePath);
+      writeStream.write(dot);
+      writeStream.end();
+
+      const filePath2 = 'C:\\Users\\brian\\brian\\development\\CodeVisual\\editors\\code\\temp\\dotTranslated.txt';
+      const writeStream2 = fs.createWriteStream(filePath2);
+      writeStream2.write(dotTranslated);
+      writeStream2.end();
+    } catch(e) {
+      console.log('Error:', e);
+    }
 
     const dotRendered = await viz.then(viz => viz.renderString(dot, renderOptions));
 
-    return [dotRust, dotRendered, symbolsByFileId];
+    return [dotTranslated, dotRendered, symbolsByFileId];
   }
 
   async generateFuncCallGraph(uri: vscode.Uri, anchor: vscode.Position, ig: Ignore): Promise<string | null> {

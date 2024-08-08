@@ -5,26 +5,7 @@ import { FileOutline, locationIdHierarchyItem, SymbolLocation } from './types';
 import { DefaultLang, Language } from './lang';
 import * as vscode from 'vscode';
 import * as path from 'path';
-
-class ThreeNumbers {
-  a: number;
-  b: number;
-  c: number;
-
-  constructor(public _a: number, public _b: number, public _c: number) {
-    this.a = _a;
-    this.b = _b;
-    this.c = _c;
-  }
-
-  equals(other: ThreeNumbers): boolean {
-      return this.a === other.a && this.b === other.b && this.c === other.c;
-  }
-
-  hashCode(): number {
-      return this.a * 10 + this.b * 100 + this.c * 1000;
-  }
-}
+import _ = require('lodash');
 
 export class GraphGeneratorRust {
   root: string;
@@ -105,7 +86,7 @@ export class GraphGeneratorRust {
 
   add_interface_implementations(filePath: string, position: vscode.Position, locations: vscode.Location[]): void {
     const location = new SymbolLocation(filePath, position);
-    const implementations = locations.map(location => new SymbolLocation(location.uri.fsPath, location.range.start));
+    const implementations = locations.map(location => new SymbolLocation(location.uri.path, location.range.start));
     this.interfaces.set(location, implementations);
   }
 
@@ -123,8 +104,8 @@ export class GraphGeneratorRust {
     });
 
 
-    const cellIds = new Set<[number, number, number]>();
-    //const cellIds = new Set<ThreeNumbers>();
+    //const cellIds = new Set<[number, number, number]>();
+    const cellIds = new Set<string>();
     tables.forEach(([tid, tbl]) => {
       tbl.sections.forEach(cell => this.collectCellIds(tid, cell, cellIds));
     });
@@ -132,13 +113,14 @@ export class GraphGeneratorRust {
 
 
     const updatedFiles = new Set<string>();
-    const insertedSymbols = new Set<[number, number, number]>();
+    //const insertedSymbols = new Set<[number, number, number]>();
+    const insertedSymbols = new Set<string>();
 
     const incomingCalls = Array.from(this.incomingCalls.entries()).flatMap(([callee, callers]) => {
       const to = callee.locationId(files);
       console.log('Incoming call to:', to);
 
-      if (!to || !cellIds.has(to)) return [];
+      if (!to || !cellIds.has(to.toString())) return [];
 
       return callers.map(call => {
         let updated;
@@ -147,14 +129,14 @@ export class GraphGeneratorRust {
         // another approach would be to modify edges to make them start from the outter functions, which is not so accurate.
 
         //const from = call.from.locationId(files);
-        const from = locationIdHierarchyItem(call.from, call.from.uri.fsPath, files);
+        const from = locationIdHierarchyItem(call.from, call.from.uri.path, files);
         if (from) {
-          const fileOutline = files.get(call.from.uri.fsPath);
+          const fileOutline = files.get(call.from.uri.path);
           if (fileOutline) {
-            updated = cellIds.has(from) || insertedSymbols.has(from) || this.tryInsertSymbol(call.from, fileOutline);
+            updated = cellIds.has(from.toString()) || insertedSymbols.has(from.toString()) || this.tryInsertSymbol(call.from, fileOutline);
             if (updated) {
-              updatedFiles.add(call.from.uri.fsPath);
-              insertedSymbols.add(from);
+              updatedFiles.add(call.from.uri.path);
+              insertedSymbols.add(from.toString());
 
               return new Edge(from, to, []);
             }
@@ -167,13 +149,13 @@ export class GraphGeneratorRust {
 
     const outgoingCalls = Array.from(this.outgoingCalls.entries()).flatMap(([caller, callees]) => {
       const from = caller.locationId(files);
-      if (!from || !cellIds.has(from)) return [];
+      if (!from || !cellIds.has(from.toString())) return [];
 
       return callees.map(call => {
         //const to = call.to.locationId(files);
-        const to = locationIdHierarchyItem(call.to, call.to.uri.fsPath, files);
+        const to = locationIdHierarchyItem(call.to, call.to.uri.path, files);
         if (to) {
-          return cellIds.has(to) ? new Edge(from, to, []) : null;
+          return cellIds.has(to.toString()) ? new Edge(from, to, []) : null;
         }
 
         return null;
@@ -182,12 +164,12 @@ export class GraphGeneratorRust {
 
     const implementations = Array.from(this.interfaces.entries()).flatMap(([interfaceLoc, implementations]) => {
       const to = interfaceLoc.locationId(files);
-      if (!to || !cellIds.has(to)) return [];
+      if (!to || !cellIds.has(to.toString())) return [];
 
       return implementations.map(location => {
         const from = location.locationId(files);
         if (from) {
-          return cellIds.has(from) ? new Edge(from, to, [CssClass.Impl]) : null;
+          return cellIds.has(from.toString()) ? new Edge(from, to, [CssClass.Impl]) : null;
         }
         
         return null;
@@ -261,14 +243,9 @@ export class GraphGeneratorRust {
     }
   }
 
-  collectCellIds(tableId: number, cell: Cell, ids: Set<[number, number, number]>): void {
-    ids.add([tableId, cell.rangeStart[0], cell.rangeStart[1]]);
+  collectCellIds(tableId: number, cell: Cell, ids: Set<string>): void {
+    ids.add([tableId, cell.rangeStart[0], cell.rangeStart[1]].toString());
     cell.children.forEach(child => this.collectCellIds(tableId, child, ids));
-  }
-
-  collectCellIdsNew(tableId: number, cell: Cell, ids: Set<ThreeNumbers>): void {
-    ids.add(new ThreeNumbers(tableId, cell.rangeStart[0], cell.rangeStart[1]));
-    cell.children.forEach(child => this.collectCellIdsNew(tableId, child, ids));
   }
 
   tryInsertSymbol(item: vscode.CallHierarchyItem, file: FileOutline): boolean {
