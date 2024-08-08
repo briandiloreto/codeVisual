@@ -5,7 +5,6 @@ import { FileOutline, locationIdHierarchyItem, SymbolLocation } from './types';
 import { DefaultLang, Language } from './lang';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import _ = require('lodash');
 
 export class GraphGeneratorRust {
   root: string;
@@ -103,14 +102,11 @@ export class GraphGeneratorRust {
       return [file.id, table];
     });
 
-
     //const cellIds = new Set<[number, number, number]>();
     const cellIds = new Set<string>();
     tables.forEach(([tid, tbl]) => {
       tbl.sections.forEach(cell => this.collectCellIds(tid, cell, cellIds));
     });
-    console.log('Cell IDs:', cellIds);
-
 
     const updatedFiles = new Set<string>();
     //const insertedSymbols = new Set<[number, number, number]>();
@@ -119,7 +115,6 @@ export class GraphGeneratorRust {
     const incomingCalls = Array.from(this.incomingCalls.entries()).flatMap(([callee, callers]) => {
       const to = callee.locationId(files);
       console.log('Incoming call to:', to);
-
       if (!to || !cellIds.has(to.toString())) return [];
 
       return callers.map(call => {

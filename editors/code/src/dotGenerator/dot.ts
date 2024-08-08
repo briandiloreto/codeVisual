@@ -110,7 +110,7 @@ digraph {
 
           ${Dot.clusters(subgraph.subgraphs)}
         };
-        `;
+      `;
       })
       .join("\n");
   }
