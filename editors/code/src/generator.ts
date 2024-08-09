@@ -17,6 +17,11 @@ const renderOptions = {format: "svg"};
 
 const isWindows = process.platform === 'win32';
 
+function getSymbolKindLabel(value: number): string | undefined {
+  return vscode.SymbolKind[value] as string | 'UNKNWON'; 
+}
+
+
 export class Generator {
   private root: string;
   private inner: GraphGenerator;
@@ -33,14 +38,15 @@ export class Generator {
     progress: vscode.Progress<{ message?: string; increment?: number }>,
     token: vscode.CancellationToken,
   ): Promise<[string, string, SymbolsByFileId]> {
+    // Sort files
     files.sort((f1, f2) => f2.path.split('/').length - f1.path.split('/').length);
-
-    const funcMap = new Map<string, Set<string>>(files.map(f => [normalizedPath(f.path), new Set()]));
-
     let finishedCount = 0;
     progress.report({ message: `${finishedCount} / ${files.length}` });
 
-    // Define symbol lookup by files indexed numerically, starting from 1
+    // Unique functions in each file
+    const funcMap = new Map<string, Set<string>>(files.map(f => [normalizedPath(f.path), new Set()]));
+
+    // Define symbol lookup by files, indexed numerically from 1
     let fileIndex = 0;
     let symbolsByFileId: SymbolsByFileId = {};
      
@@ -57,8 +63,10 @@ export class Generator {
         continue;
       }
 
-      // Add file
+      // Add file and update progress
       const filePath = normalizedPath(file.path);
+      const fileNameParts = filePath.split('/');
+      const fileName = fileNameParts[fileNameParts.length - 1];
 
       this.innerRust.add_file(filePath, symbols);
       if (!this.inner.add_file(filePath, symbols)) {
@@ -67,7 +75,7 @@ export class Generator {
         continue;
       }
 
-      // Collect top-level symbols in the file
+      // Collect info on all symbols in the file, ignoring hierarchy
       let symbolsInfo = symbols.map(s => omit(s, ['children', 'tags']) as vscode.DocumentSymbol);
 
       // Process symbols and children recursively
@@ -77,9 +85,12 @@ export class Generator {
             return ["", "", {}];
           }
 
+          // The symbol start location is the location of its identifier
           const symbolStart = symbol.selectionRange.start;
-
-          // Process functions and interfaces
+          const symbolKindName = getSymbolKindLabel(symbol.kind);
+          console.log(`Symbol in ${fileName}: ${symbol.name} (${symbolKindName}) at location ${symbolStart.line}, ${symbolStart.character}`);
+            
+          // Process unique functions and interfaces
           if (FUNC_KINDS.includes(symbol.kind) && !hasFunc(funcMap, filePath, symbolStart)) {
             let items: vscode.CallHierarchyItem[];
             try {
@@ -89,6 +100,9 @@ export class Generator {
               continue;
             }
 
+            console.log('Symbol call hierarchy items:', items);
+
+            // Multiple callhierarchies can exist because of overloaded functions/methods, and inheritance/polymorphicsm
             for (const item of items) {
               await this.resolveCallsInFiles(item, funcMap);
             }
@@ -124,7 +138,7 @@ export class Generator {
 
         symbols = symbols.flatMap(symbol => symbol.children);
 
-        // Collect child symbols for the file
+        // Collect info on child symbols
         const symbolsInfoChildren = symbols.map(s => omit(s, ['children', 'tags']) as vscode.DocumentSymbol);
         symbolsInfo = symbolsInfo.concat(symbolsInfoChildren);
       }
@@ -243,16 +257,22 @@ export class Generator {
   async resolveCallsInFiles(item: vscode.CallHierarchyItem, funcMap: Map<string, Set<string>>) {
     await vscode.commands.executeCommand<vscode.CallHierarchyIncomingCall[]>('vscode.provideIncomingCalls', item)
       .then(async calls => {
+        // Fix windows paths
         if (isWindows) {
           calls.forEach(call => call.from.uri = call.from.uri.with({ path: normalizedPath(call.from.uri.path )}));
         }
-        const symbolStart = item.selectionRange.start;
 
         const itemNormalizedPath = normalizedPath(item.uri.path);
-        this.inner.add_incoming_calls(itemNormalizedPath, symbolStart, calls);
-        this.innerRust.add_incoming_calls(itemNormalizedPath, symbolStart, calls);
+
+        // Mark that I processed this symbol location
+        const symbolStart = item.selectionRange.start;
         funcMap.get(itemNormalizedPath)?.add(keyFromPosition(symbolStart));
 
+        // Add incoming calls
+        this.inner.add_incoming_calls(itemNormalizedPath, symbolStart, calls);
+        this.innerRust.add_incoming_calls(itemNormalizedPath, symbolStart, calls);
+
+         // Recursively follow call chain (in files that have already been processed?)
         calls = calls
           .filter(call => {
             const funcs = funcMap.get(call.from.uri.path);

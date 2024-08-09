@@ -90,6 +90,9 @@ export class GraphGeneratorRust {
   }
 
   generate_dot_source(): string {
+    // Generate DOT for the graph
+    // Each file becomes an HTML table containing sub-tables for each class/interface
+    // Files are grouped into clusters for each directory
     const files = this.files;
 
     // TODO: it's better to construct tables before fetching call hierarchy, so that we can skip the filtered out symbols.
@@ -102,7 +105,8 @@ export class GraphGeneratorRust {
       return [file.id, table];
     });
 
-    //const cellIds = new Set<[number, number, number]>();
+    // Collect all symbol locations for reference
+    //const cellIds = new Set<[number, number, number]>(); // Array type does not work for sets because items are object references
     const cellIds = new Set<string>();
     tables.forEach(([tid, tbl]) => {
       tbl.sections.forEach(cell => this.collectCellIds(tid, cell, cellIds));
@@ -171,6 +175,7 @@ export class GraphGeneratorRust {
       }).filter(edge => edge !== null);
     });
 
+    // Combine all edges
     const edgesCombined = [...incomingCalls, ...outgoingCalls, ...implementations];
     const edges: Edge[] = [];
     edgesCombined.map(e => {
@@ -179,6 +184,7 @@ export class GraphGeneratorRust {
       }
     });
 
+    // Rebuild updated files
     updatedFiles.forEach(path => {
       const file = files.get(path);
       if (file) {
@@ -195,6 +201,7 @@ export class GraphGeneratorRust {
   }
 
   subgraphs(files: Iterable<FileOutline>): Subgraph[] {
+    // Create a subgraph for each directory level
     const dirs = new Map<string, string[]>();
 
     for (const f of files) {

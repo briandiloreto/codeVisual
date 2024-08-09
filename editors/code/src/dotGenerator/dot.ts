@@ -65,6 +65,7 @@ digraph {
     const title = `${cell.style.icon ? `<B>${cell.style.icon}</B>  ` : EMPTY_STRING}${escapeHtml(cell.title)}`;
     const port = `${cell.rangeStart[0]}_${cell.rangeStart[1]}`;
 
+    // A cell is either a single table row (when it has no children), or a table row containing an embedded table (when it has children)
     if (cell.children.length === 0) {
       return `     <TR><TD PORT="${port}" ID="${tableId}:${port}" ${styles} ${Dot.cssClassesHref(cell.style.classes)}>${title}</TD></TR>`;
     } else {
