@@ -48,7 +48,7 @@ export class CommandManager {
 
 		const ig = await this.readIgnores(root);
 
-		for await (const uri of allSelections) {
+		for (const uri of allSelections) {
 			if (!uri.path.startsWith(root.uri.path)) {
 				vscode.window.showErrorMessage("Can not generate call graph across multiple workspace folders");
 				return;

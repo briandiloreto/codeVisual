@@ -32,6 +32,8 @@ export class SymbolLocation implements LocationId {
   }
 }
 
+// Can't implement locationId interface for vscode.CallHierarchyItem
+
 export function locationIdHierarchyItem(hierarchyItem: vscode.CallHierarchyItem, path: string, files: Map<string, FileOutline>): [number, number, number] | null {
   const file = files.get(path);
   if (!file) return null;

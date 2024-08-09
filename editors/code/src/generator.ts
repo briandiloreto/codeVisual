@@ -40,22 +40,24 @@ export class Generator {
     let finishedCount = 0;
     progress.report({ message: `${finishedCount} / ${files.length}` });
 
-    // Define symbol lookup
+    // Define symbol lookup by files indexed numerically, starting from 1
     let fileIndex = 0;
     let symbolsByFileId: SymbolsByFileId = {};
      
-    for await (const file of files) {
+    // Collect symbols in all files
+    for (const file of files) {
       if (token.isCancellationRequested) {
         return ["", "", {}];
       }
 
-      // retry several times if the LSP server is not ready
+      // Get symbols in file, retrying several times if the LSP server is not ready
       let symbols = await retryCommand<vscode.DocumentSymbol[]>(5, 600, 'vscode.executeDocumentSymbolProvider', file);
       if (symbols === undefined) {
         vscode.window.showErrorMessage(`Document symbol information not available for '${file.fsPath}'`);
         continue;
       }
 
+      // Add file
       const filePath = normalizedPath(file.path);
 
       this.innerRust.add_file(filePath, symbols);
@@ -66,18 +68,18 @@ export class Generator {
       }
 
       // Collect top-level symbols in the file
-      fileIndex++;
       let symbolsInfo = symbols.map(s => omit(s, ['children', 'tags']) as vscode.DocumentSymbol);
 
-      // Process symbols
+      // Process symbols and children recursively
       while (symbols.length > 0) {
-        for await (const symbol of symbols) {
+        for (const symbol of symbols) {
           if (token.isCancellationRequested) {
             return ["", "", {}];
           }
 
           const symbolStart = symbol.selectionRange.start;
 
+          // Process functions and interfaces
           if (FUNC_KINDS.includes(symbol.kind) && !hasFunc(funcMap, filePath, symbolStart)) {
             let items: vscode.CallHierarchyItem[];
             try {
@@ -87,7 +89,7 @@ export class Generator {
               continue;
             }
 
-            for await (const item of items) {
+            for (const item of items) {
               await this.resolveCallsInFiles(item, funcMap);
             }
           } else if (symbol.kind === vscode.SymbolKind.Interface) {
@@ -128,6 +130,7 @@ export class Generator {
       }
 
       // Create symbol lookup for current file
+      fileIndex++;
       symbolsByFileId[fileIndex.toString()] = {
         filePath: file.path,
         symbols: symbolsInfo
@@ -178,14 +181,14 @@ export class Generator {
       return null;
     }
 
-    for await (const item of items) {
+    for (const item of items) {
       files.set(normalizedPath(item.uri.path), new VisitedFile(item.uri));
 
       await this.resolveIncomingCalls(item, files, ig);
       await this.resolveOutgoingCalls(item, files, ig);
     }
 
-    for await (const file of files.values()) {
+    for (const file of files.values()) {
       if (file.skip) { continue; }
 
       let symbols = await retryCommand<vscode.DocumentSymbol[]>(5, 600, 'vscode.executeDocumentSymbolProvider', file.uri);
@@ -201,7 +204,7 @@ export class Generator {
       this.innerRust.add_file(normalizedPath(file.uri.path), symbols);
     }
 
-    for await (const item of items) {
+    for (const item of items) {
       this.inner.highlight(normalizedPath(item.uri.path), item.selectionRange.start);
       this.innerRust.highlight(normalizedPath(item.uri.path), item.selectionRange.start);
     }
@@ -256,7 +259,7 @@ export class Generator {
             return funcs !== undefined && !funcs.has(keyFromPosition(call.from.selectionRange.start));
           });
 
-        for await (const call of calls) {
+        for (const call of calls) {
           await this.resolveCallsInFiles(call.from, funcMap);
         }
       })
@@ -291,7 +294,7 @@ export class Generator {
             return !file.skip && !file.hasVisitedFunc(call.from.selectionRange.start, FuncCallDirection.INCOMING);
           });
 
-        for await (const call of calls) {
+        for (const call of calls) {
           await this.resolveIncomingCalls(call.from, funcMap, ig);
         }
       })
@@ -331,7 +334,7 @@ export class Generator {
             return !file.skip && !file.hasVisitedFunc(call.to.selectionRange.start, FuncCallDirection.OUTGOING);
           });
 
-        for await (const call of calls) {
+        for (const call of calls) {
           await this.resolveOutgoingCalls(call.to, funcMap, ig);
         }
       })

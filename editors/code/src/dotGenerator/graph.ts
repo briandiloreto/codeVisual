@@ -114,5 +114,3 @@ export enum CssClass {
 export function cssClassToString(cssClass: CssClass): string {
   return cssClass;
 }
-
-

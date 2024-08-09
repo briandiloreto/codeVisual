@@ -20,7 +20,7 @@ export class FileClassifier {
     uris: Uri[],
     token: CancellationToken
   ): Promise<Map<string, Uri[]>> {
-    for await (const uri of uris) {
+    for (const uri of uris) {
       const fileType = (await workspace.fs.stat(uri)).type;
 
       if ((fileType & FileType.Directory) === FileType.Directory) {
@@ -44,7 +44,7 @@ export class FileClassifier {
   ) {
     const entries = await workspace.fs.readDirectory(dir);
 
-    for await (const entry of entries) {
+    for (const entry of entries) {
       if (token.isCancellationRequested) {
         return;
       }

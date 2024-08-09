@@ -46,7 +46,7 @@ export class DefaultLang implements Language {
   }
 
   filterSymbol(symbol: vscode.DocumentSymbol): boolean {
-  switch (symbol.kind) {
+    switch (symbol.kind) {
       case vscode.SymbolKind.Constant:
       case vscode.SymbolKind.Variable:
       case vscode.SymbolKind.Field:
