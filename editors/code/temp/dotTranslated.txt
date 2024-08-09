@@ -1,0 +1,231 @@
+
+digraph {
+  graph [
+    rankdir = "LR"
+    ranksep = 2.0
+    fontname = "Arial"
+  ];
+  node [
+    fontsize = "16"
+    fontname = "Arial"
+    shape = "plaintext"
+    style = "rounded, filled"
+  ];
+  edge [
+    label = " "
+  ];
+
+  
+    "1" [id="1", label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="8" CELLPADDING="4">
+        <TR><TD WIDTH="230" BORDER="0" CELLPADDING="6" HREF="remove_me_url.title">database.service.ts</TD></TR>
+        
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:7_10" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.interface.clickable">
+             <TR><TD PORT="7_10" BORDER="0" >Dictionary</TD></TR>
+     <TR><TD PORT="8_2" ID="1:8_2"  STYLE="ROUNDED" href="remove_me_url.cell">[]</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:11_13" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"   BGCOLOR="green" href="remove_me_url.cell.type">
+             <TR><TD PORT="11_13" BORDER="0" ><B>C</B>  DatabaseService</TD></TR>
+     <TR><TD PORT="561_15" ID="1:561_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">apiKeyAdvance</TD></TR>
+     <TR><TD PORT="570_15" ID="1:570_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">apiKeyIncrementError</TD></TR>
+     <TR><TD PORT="29_9" ID="1:29_9"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">argumentDocument</TD></TR>
+     <TR><TD PORT="41_9" ID="1:41_9"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">argumentNodeDocument</TD></TR>
+     <TR><TD PORT="62_9" ID="1:62_9"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">argumentRef</TD></TR>
+     <TR><TD PORT="52_9" ID="1:52_9"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">argumentRelationDocument</TD></TR>
+     <TR><TD PORT="158_15" ID="1:158_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deactivateArgumentsFlagged</TD></TR>
+     <TR><TD PORT="326_15" ID="1:326_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteArgumentById</TD></TR>
+     <TR><TD PORT="289_15" ID="1:289_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteArgumentByIdDumb</TD></TR>
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:335_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="335_15" BORDER="0" >deleteArgumentNodesAndRelationsById</TD></TR>
+     <TR><TD PORT="341_31" ID="1:341_31"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">querySnapshotNodes.forEach() callback</TD></TR>
+     <TR><TD PORT="350_35" ID="1:350_35"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">querySnapshotRelations.forEach() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+     <TR><TD PORT="224_15" ID="1:224_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteArgumentsAll</TD></TR>
+     <TR><TD PORT="252_15" ID="1:252_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteArgumentsExcept</TD></TR>
+     <TR><TD PORT="469_15" ID="1:469_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteCategories</TD></TR>
+     <TR><TD PORT="357_15" ID="1:357_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteVotesAll</TD></TR>
+     <TR><TD PORT="364_15" ID="1:364_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteVotesNode</TD></TR>
+     <TR><TD PORT="371_15" ID="1:371_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">deleteVotesRelation</TD></TR>
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:378_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="378_15" BORDER="0" >findChildNodesThatDontMatchParent</TD></TR>
+     <TR><TD PORT="398_20" ID="1:398_20"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">mismatches.sort() callback</TD></TR>
+     <TR><TD PORT="382_31" ID="1:382_31"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">querySnapshotNodes.forEach() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:510_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="510_15" BORDER="0" >getApiKey</TD></TR>
+     <TR><TD PORT="519_27" ID="1:519_27"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">querySnapshots.forEach() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+     <TR><TD PORT="66_15" ID="1:66_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">getArgumentById</TD></TR>
+     <TR><TD PORT="71_15" ID="1:71_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">getArgumentByTitle</TD></TR>
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:148_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="148_15" BORDER="0" >getArgumentRelations</TD></TR>
+     <TR><TD PORT="153_26" ID="1:153_26"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">query.docs.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:120_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="120_15" BORDER="0" >getArgumentsByCategory</TD></TR>
+     <TR><TD PORT="138_26" ID="1:138_26"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">query.docs.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:99_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="99_15" BORDER="0" >getArgumentsByStatus</TD></TR>
+     <TR><TD PORT="115_26" ID="1:115_26"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">query.docs.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:84_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="84_15" BORDER="0" >getArgumentTreeNodes</TD></TR>
+     <TR><TD PORT="94_26" ID="1:94_26"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">query.docs.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+     <TR><TD PORT="434_15" ID="1:434_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">getCategories</TD></TR>
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:447_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="447_15" BORDER="0" >getCategoriesWithFullTitle</TD></TR>
+     <TR><TD PORT="452_23" ID="1:452_23"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">categories.forEach() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+     <TR><TD PORT="427_15" ID="1:427_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">getPromptById</TD></TR>
+     <TR><TD PORT="594_15" ID="1:594_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">getUsers</TD></TR>
+     <TR><TD PORT="184_15" ID="1:184_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertArgument</TD></TR>
+     <TR><TD PORT="205_15" ID="1:205_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertArgumentNodeRelations</TD></TR>
+     <TR><TD PORT="195_15" ID="1:195_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertArgumentNodes</TD></TR>
+     <TR><TD PORT="215_15" ID="1:215_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertArgumentNodeVote</TD></TR>
+     <TR><TD PORT="482_15" ID="1:482_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertCategory</TD></TR>
+     <TR><TD PORT="589_15" ID="1:589_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertUser</TD></TR>
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="1:489_15" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="489_15" BORDER="0" >populateApiKeys</TD></TR>
+     <TR><TD PORT="498_15" ID="1:498_15"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">keys.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+     <TR><TD PORT="412_9" ID="1:412_9"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">promptDocument</TD></TR>
+     <TR><TD PORT="423_9" ID="1:423_9"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">promptRef</TD></TR>
+     <TR><TD PORT="578_15" ID="1:578_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">queueTopic</TD></TR>
+     <TR><TD PORT="220_15" ID="1:220_15"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">updateArgument</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+        <TR><TD CELLSPACING="0" HEIGHT="1" WIDTH="1" FIXEDSIZE="TRUE" STYLE="invis"></TD></TR>
+        </TABLE>
+    >];
+        
+
+    "2" [id="2", label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="8" CELLPADDING="4">
+        <TR><TD WIDTH="230" BORDER="0" CELLPADDING="6" HREF="remove_me_url.title">topic.service.ts</TD></TR>
+        
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="2:9_13" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"   BGCOLOR="green" href="remove_me_url.cell.type">
+             <TR><TD PORT="9_13" BORDER="0" ><B>C</B>  TopicService</TD></TR>
+     <TR><TD PORT="70_8" ID="2:70_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">init</TD></TR>
+     <TR><TD PORT="98_8" ID="2:98_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">insertTopic</TD></TR>
+     <TR><TD PORT="107_8" ID="2:107_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">processTopic</TD></TR>
+     <TR><TD PORT="407_8" ID="2:407_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">promptTopic</TD></TR>
+     <TR><TD PORT="432_8" ID="2:432_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">promptTopicBackground</TD></TR>
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="2:317_8" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="317_8" BORDER="0" >promptTopicCategory</TD></TR>
+     <TR><TD PORT="324_19" ID="2:324_19"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">categories.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+
+        <TR><TD BORDER="0" CELLPADDING="0">
+        <TABLE ID="2:367_8" CELLSPACING="8" CELLPADDING="4" CELLBORDER="1"  STYLE="ROUNDED" BGCOLOR="green" href="remove_me_url.cell.method.clickable">
+             <TR><TD PORT="367_8" BORDER="0" >promptTopicExistsInCategory</TD></TR>
+     <TR><TD PORT="374_15" ID="2:374_15"  STYLE="ROUNDED" href="remove_me_url.cell.function.clickable">topics.map() callback</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+     <TR><TD PORT="285_8" ID="2:285_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">promptTopicPhrasing</TD></TR>
+     <TR><TD PORT="458_8" ID="2:458_8"  STYLE="ROUNDED" href="remove_me_url.cell.method.clickable">promptTopicRelationships</TD></TR>
+        </TABLE>
+        </TD></TR>
+      
+        <TR><TD CELLSPACING="0" HEIGHT="1" WIDTH="1" FIXEDSIZE="TRUE" STYLE="invis"></TD></TR>
+        </TABLE>
+    >];
+        
+
+  
+        subgraph "cluster_/functions/src/services" {
+          label = "/functions/src/services";
+
+          1 2
+
+          
+        };
+      
+
+  2:"107_8" -> 1:"570_15" [id="2:107_8 -> 1:570_15"];
+    1:"66_15" -> 1:"29_9" [id="1:66_15 -> 1:29_9"];
+    1:"71_15" -> 1:"29_9" [id="1:71_15 -> 1:29_9"];
+    1:"99_15" -> 1:"29_9" [id="1:99_15 -> 1:29_9"];
+    1:"120_15" -> 1:"29_9" [id="1:120_15 -> 1:29_9"];
+    2:"367_8" -> 1:"120_15" [id="2:367_8 -> 1:120_15"];
+    2:"107_8" -> 2:"367_8" [id="2:107_8 -> 2:367_8"];
+    1:"84_15" -> 1:"41_9" [id="1:84_15 -> 1:41_9"];
+    1:"66_15" -> 1:"62_9" [id="1:66_15 -> 1:62_9"];
+    1:"220_15" -> 1:"62_9" [id="1:220_15 -> 1:62_9"];
+    1:"158_15" -> 1:"220_15" [id="1:158_15 -> 1:220_15"];
+    2:"107_8" -> 1:"220_15" [id="2:107_8 -> 1:220_15"];
+    2:"317_8" -> 1:"220_15" [id="2:317_8 -> 1:220_15"];
+    2:"407_8" -> 1:"220_15" [id="2:407_8 -> 1:220_15"];
+    2:"432_8" -> 1:"220_15" [id="2:432_8 -> 1:220_15"];
+    2:"458_8" -> 1:"220_15" [id="2:458_8 -> 1:220_15"];
+    2:"107_8" -> 2:"317_8" [id="2:107_8 -> 2:317_8"];
+    2:"107_8" -> 2:"407_8" [id="2:107_8 -> 2:407_8"];
+    2:"107_8" -> 2:"432_8" [id="2:107_8 -> 2:432_8"];
+    2:"107_8" -> 2:"458_8" [id="2:107_8 -> 2:458_8"];
+    1:"148_15" -> 1:"52_9" [id="1:148_15 -> 1:52_9"];
+    1:"326_15" -> 1:"335_15" [id="1:326_15 -> 1:335_15"];
+    2:"107_8" -> 1:"335_15" [id="2:107_8 -> 1:335_15"];
+    1:"357_15" -> 1:"364_15" [id="1:357_15 -> 1:364_15"];
+    1:"357_15" -> 1:"371_15" [id="1:357_15 -> 1:371_15"];
+    2:"70_8" -> 1:"510_15" [id="2:70_8 -> 1:510_15"];
+    1:"447_15" -> 1:"434_15" [id="1:447_15 -> 1:434_15"];
+    2:"317_8" -> 1:"447_15" [id="2:317_8 -> 1:447_15"];
+    2:"70_8" -> 1:"427_15" [id="2:70_8 -> 1:427_15"];
+    2:"98_8" -> 1:"184_15" [id="2:98_8 -> 1:184_15"];
+    2:"107_8" -> 2:"98_8" [id="2:107_8 -> 2:98_8"];
+    2:"458_8" -> 1:"205_15" [id="2:458_8 -> 1:205_15"];
+    2:"407_8" -> 1:"195_15" [id="2:407_8 -> 1:195_15"];
+    1:"427_15" -> 1:"412_9" [id="1:427_15 -> 1:412_9"];
+    1:"427_15" -> 1:"423_9" [id="1:427_15 -> 1:423_9"];
+    2:"107_8" -> 2:"285_8" [id="2:107_8 -> 2:285_8"];
+}
+    
